@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "productService.gRPC";
+option java_outer_classname = "alternative";
+
+package productService;
+
+service ProductService {
+    // Health check for the product service
+    rpc HealthCheck(Empty) returns (HealthResponse);
+
+    // Get all products
+    rpc GetProducts(Empty) returns (ProductList);
+
+    // Add a new product
+    rpc AddProduct(Product) returns (ProductResponse);
+
+    // Update an existing product
+    rpc UpdateProduct(Product) returns (ProductResponse);
+
+    // Get a product by ID
+    rpc GetProductById(ProductRequest) returns (Product);
+
+    // Delete a product by ID
+    rpc DeleteProduct(ProductRequest) returns (ProductResponse);
+
+   
+}
+
+// Request for getting product by id or deleting by id
+message ProductRequest {
+    int32 id = 1;
+}
+
+// A generic empty message
+message Empty {}
+
+// Response for health check
+message HealthResponse {
+    bool healthy = 1;
+    string message = 2;
+}
+
+// A single product
+message Product {
+    int32 id = 1;
+    string name = 2;
+    float price = 3;
+    string description = 4;
+    string image = 5;
+}
+
+// A list of products
+message ProductList {
+    repeated Product products = 1;
+}
+
+// Response for adding or updating a product
+message ProductResponse {
+    bool success = 1;
+    string message = 2;
+}
