@@ -1,5 +1,7 @@
 package productService.gRPC;
 
+import org.slf4j.LoggerFactory;
+import productService.Metrics;
 import productService.database.H2DatabaseManager;
 
 import java.sql.Connection;
@@ -17,8 +19,10 @@ import productService.gRPC.ProductServiceGrpc.ProductServiceImplBase;
 public class ProductServiceImpl extends ProductServiceImplBase {
 
     private static final Logger logger = Logger.getLogger(ProductServiceImpl.class.getName());
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private final H2DatabaseManager dbManager;
+
 
     public ProductServiceImpl() throws SQLException {
         dbManager = new H2DatabaseManager();
@@ -36,6 +40,8 @@ public class ProductServiceImpl extends ProductServiceImplBase {
 
     @Override
     public void getProducts(Empty request, StreamObserver<ProductList> responseObserver) {
+        Metrics.totalRequests.inc();
+        logger.info("Total requests: " + Metrics.totalRequests.get());
         try (Connection conn = dbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM products")) {
 
@@ -55,7 +61,7 @@ public class ProductServiceImpl extends ProductServiceImplBase {
                     productList.addProducts(product);
                 }
 
-                logger.info("Fetched products: " + productList.getProductsList());
+                //logger.info("Fetched products: " + productList.getProductsList());
                 responseObserver.onNext(productList.build());
                 responseObserver.onCompleted();
             }
