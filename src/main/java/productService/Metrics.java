@@ -7,4 +7,6 @@ public class Metrics {
             .name("product_service_requests_total")
             .help("Total number of requests to the product service")
             .register();
+
+
 }
